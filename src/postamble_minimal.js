@@ -115,7 +115,11 @@ WebAssembly.instantiate(Module['wasm'], imports).then(function(output) {
   var asm = output.instance.exports;
 #endif
 
+#if !DECLARE_ASM_MODULE_EXPORTS
+  exportAsmFunctions(asm);
+#else
   /*** ASM_MODULE_EXPORTS ***/
+#endif
   initRuntime(asm);
   ready();
 })

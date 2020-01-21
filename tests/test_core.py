@@ -3593,6 +3593,7 @@ ok
     self.do_run(src, 'float: 42.\n', js_engines=js_engines)
 
   def dylink_test(self, main, side, expected=None, header=None, main_emcc_args=[], force_c=False, need_reverse=True, auto_load=True, **kwargs):
+    #self.set_setting('NO_DECLARE_ASM_MODULE_EXPORTS')
     if header:
       create_test_file('header.h', header)
 
@@ -3640,7 +3641,7 @@ ok
       print('flip')
       self.dylink_test(side, main, expected, header, main_emcc_args, force_c, need_reverse=False, **kwargs)
 
-  def do_basic_dylink_test(self):
+  def do_basic_dylink_test(self, need_reverse=True):
     self.dylink_test(r'''
       #include <stdio.h>
       #include "header.h"
@@ -3655,10 +3656,15 @@ ok
       int sidey() {
         return 11;
       }
-    ''', 'other says 11.', 'extern "C" int sidey();')
+    ''', 'other says 11.', 'extern "C" int sidey();', need_reverse=need_reverse)
 
   @needs_dlfcn
   def test_dylink_basics(self):
+    self.do_basic_dylink_test()
+
+  @needs_dlfcn
+  def test_dylink_no_export(self):
+    self.set_setting('NO_DECLARE_ASM_MODULE_EXPORTS')
     self.do_basic_dylink_test()
 
   @needs_dlfcn
@@ -8265,18 +8271,24 @@ NODEFS is no longer included by default; build with -lnodefs.js
   @no_asan('TODO: ASan with MINIMAL_RUNTIME')
   @no_lsan('TODO: LSan with MINIMAL_RUNTIME')
   @no_wasm2js('TODO: MINIMAL_RUNTIME with WASM2JS')
-  def test_minimal_runtime_hello_world(self):
-    self.banned_js_engines = [V8_ENGINE, SPIDERMONKEY_ENGINE] # TODO: Support for non-Node.js shells has not yet been added to MINIMAL_RUNTIME
-    for args in [[], ['-s', 'MINIMAL_RUNTIME_STREAMING_WASM_COMPILATION=1'], ['-s', 'MINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION=1'], ['-s', 'DECLARE_ASM_MODULE_EXPORTS=0']]:
-      self.emcc_args = ['-s', 'MINIMAL_RUNTIME=1'] + args
-      self.set_setting('MINIMAL_RUNTIME', 1)
-      self.maybe_closure()
-      self.do_run(open(path_from_root('tests', 'small_hello_world.c')).read(), 'hello')
+  @parameterized({
+    'default': ([],),
+    'streaming': (['-s', 'MINIMAL_RUNTIME_STREAMING_WASM_COMPILATION=1'],),
+    'streaming_inst': (['-s', 'MINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION=1'],),
+    'no_export': (['-s', 'DECLARE_ASM_MODULE_EXPORTS=0'],)
+  })
+  def test_minimal_runtime_hello_world(self, args):
+    # TODO: Support for non-Node.js shells has not yet been added to MINIMAL_RUNTIME
+    self.banned_js_engines = [V8_ENGINE, SPIDERMONKEY_ENGINE]
+    self.emcc_args = ['-s', 'MINIMAL_RUNTIME=1'] + args
+    self.set_setting('MINIMAL_RUNTIME', 1)
+    self.maybe_closure()
+    self.do_run(open(path_from_root('tests', 'small_hello_world.c')).read(), 'hello')
 
   # Test that printf() works in MINIMAL_RUNTIME=1
   @no_emterpreter
   @no_wasm_backend('MINIMAL_RUNTIME not yet available in Wasm backend')
-  def test_minimal_runtime_hello_world_printf(self):
+  def test_minimal_runtime_hello_printf(self):
     for fs in [['-s', 'NO_FILESYSTEM=1'], ['-s', 'FORCE_FILESYSTEM=1']]:
       self.emcc_args = ['-s', 'MINIMAL_RUNTIME=1'] + fs
       self.maybe_closure()
