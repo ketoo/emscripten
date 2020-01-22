@@ -3627,6 +3627,11 @@ window.close = function() {
       for pthreads in [[], ['-s', 'USE_PTHREADS=1']]:
         self.btest(path_from_root('tests', 'pthread', 'test_pthread_64bit_cxx11_atomics.cpp'), expected='0', args=opt + pthreads + ['-std=c++11'])
 
+  # Test c++ std::thread::hardware_concurrency()
+  @requires_threads
+  def test_pthread_hardware_concurrency(self):
+    self.btest(path_from_root('tests', 'pthread', 'test_pthread_hardware_concurrency.cpp'), expected='0', args=['-O2', '-s', 'USE_PTHREADS=1', '--pre-js', path_from_root('tests', 'pthread', 'test_pthread_hardware_concurrency.js')])
+
   @parameterized({
     'join': ('join',),
     'wait': ('wait',),
