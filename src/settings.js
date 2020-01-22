@@ -1379,6 +1379,11 @@ var USE_PTHREADS = 0;
 // have their runtimes loaded on demand after the main runtime is initialized.
 // Note that this means that the workers cannot be joined from the main thread
 // unless PROXY_TO_PTHREAD is used.
+// You can also set this at runtime on Module.pthreadPoolSize, which overrides
+// this value. This can be helpful if you want the pool size to reflect the
+// number of actual cores, for example if the application will start up a
+// thread pool of that size; in such a case you can set the value to
+// nagivator.hardwareConcurrency.
 var PTHREAD_POOL_SIZE = 0;
 var PTHREAD_POOL_DELAY_LOAD = 0;
 

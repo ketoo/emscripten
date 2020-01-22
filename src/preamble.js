@@ -780,9 +780,15 @@ var memoryInitializer = null;
 #include "memoryprofiler.js"
 #endif
 
-#if PTHREAD_POOL_SIZE > 0 && PTHREAD_POOL_DELAY_LOAD != 1
-// To work around https://bugzilla.mozilla.org/show_bug.cgi?id=1049079, warm up a worker pool before starting up the application.
-if (!ENVIRONMENT_IS_PTHREAD) addOnPreRun(function() { if (typeof SharedArrayBuffer !== 'undefined') { addRunDependency('pthreads'); PThread.allocateUnusedWorkers({{{PTHREAD_POOL_SIZE}}}, function() { removeRunDependency('pthreads'); }); }});
+#if PTHREAD_POOL_DELAY_LOAD != 1
+if (!ENVIRONMENT_IS_PTHREAD) addOnPreRun(function() {
+  if (typeof SharedArrayBuffer !== 'undefined') {
+    addRunDependency('pthreads');
+    PThread.allocateUnusedWorkers(PThread.POOL_SIZE, function() {
+      removeRunDependency('pthreads');
+    });
+  }
+});
 #endif
 
 #if ASSERTIONS && !('$FS' in addedLibraryItems) && !ASMFS

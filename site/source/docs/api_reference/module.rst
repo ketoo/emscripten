@@ -130,6 +130,10 @@ The following ``Module`` attributes affect code execution. Set them to customize
 
   Called when something is printed to standard error (stderr)
 
+.. js:attribute:: Module.pthreadPoolSize
+
+  Create a pool of Workers during startup for pthreads to use. For more details
+  see the ``PTHREAD_POOL_SIZE`` setting.
 
 Other methods
 =============

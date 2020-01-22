@@ -14,6 +14,7 @@ var LibraryPThread = {
       schedPolicy: 0/*SCHED_OTHER*/,
       schedPrio: 0
     },
+    POOL_SIZE: Module['pthreadPoolSize'] || {{{ PTHREAD_POOL_SIZE }}},
     // Workers that have been created but uninitialized. These have already been
     // parsed, but the wasm file has not yet been loaded, making it
     // distinct from the unusedWorkers below. These workers will be created before
@@ -36,13 +37,12 @@ var LibraryPThread = {
     initMainThreadBlock: function() {
       if (ENVIRONMENT_IS_PTHREAD) return undefined;
 
-#if PTHREAD_POOL_SIZE > 0
-      var requestedPoolSize = {{{ PTHREAD_POOL_SIZE }}};
+      if (Pthread.POOL_SIZE) {
 #if PTHREADS_DEBUG
-      out('Preallocating ' + requestedPoolSize + ' workers.');
+        out('Preallocating ' + Pthread.POOL_SIZE + ' workers.');
 #endif
-      PThread.preallocatedWorkers = PThread.createNewWorkers(requestedPoolSize);
-#endif
+        PThread.preallocatedWorkers = PThread.createNewWorkers(Pthread.POOL_SIZE);
+      }
 
       PThread.mainThreadBlock = {{{ makeStaticAlloc(C_STRUCTS.pthread.__size__) }}};
 
