@@ -1382,8 +1382,11 @@ var USE_PTHREADS = 0;
 // You can also set this at runtime on Module.pthreadPoolSize, which overrides
 // this value. This can be helpful if you want the pool size to reflect the
 // number of actual cores, for example if the application will start up a
-// thread pool of that size; in such a case you can set the value to
-// nagivator.hardwareConcurrency.
+// thread pool of that size (in such a case you can set the value to
+// nagivator.hardwareConcurrency). Note that if you set Module.pthreadPoolSize
+// you must still set the PTHREAD_POOL_SIZE flag at compile time, so that the
+// necessary code is included (but the value is overridden at runtime, in that
+// case).
 var PTHREAD_POOL_SIZE = 0;
 var PTHREAD_POOL_DELAY_LOAD = 0;
 

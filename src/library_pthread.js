@@ -36,12 +36,14 @@ var LibraryPThread = {
     initMainThreadBlock: function() {
       if (ENVIRONMENT_IS_PTHREAD) return undefined;
 
+#if PTHREAD_POOL_SIZE
       if (pthreadPoolSize > 0) {
 #if PTHREADS_DEBUG
         out('Preallocating ' + pthreadPoolSize + ' workers.');
 #endif
         PThread.preallocatedWorkers = PThread.createNewWorkers(pthreadPoolSize);
       }
+#endif // PTHREAD_POOL_SIZE
 
       PThread.mainThreadBlock = {{{ makeStaticAlloc(C_STRUCTS.pthread.__size__) }}};
 

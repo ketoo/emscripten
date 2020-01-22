@@ -133,7 +133,8 @@ The following ``Module`` attributes affect code execution. Set them to customize
 .. js:attribute:: Module.pthreadPoolSize
 
   Create a pool of Workers during startup for pthreads to use. For more details
-  see the ``PTHREAD_POOL_SIZE`` setting.
+  see the ``PTHREAD_POOL_SIZE`` setting (which must be set for this value to
+  be used).
 
 Other methods
 =============

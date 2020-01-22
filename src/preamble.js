@@ -780,7 +780,8 @@ var memoryInitializer = null;
 #include "memoryprofiler.js"
 #endif
 
-#if USE_PTHREADS
+#if USE_PTHREADS && PTHREAD_POOL_SIZE
+
 var pthreadPoolSize = Module['pthreadPoolSize'] || {{{ PTHREAD_POOL_SIZE }}};
 
 #if PTHREAD_POOL_DELAY_LOAD != 1
@@ -795,7 +796,7 @@ if (!ENVIRONMENT_IS_PTHREAD && pthreadPoolSize > 0) {
   });
 }
 #endif
-#endif // USE_PTHREADS
+#endif // USE_PTHREADS && PTHREAD_POOL_SIZE
 
 #if ASSERTIONS && !('$FS' in addedLibraryItems) && !ASMFS
 // show errors on likely calls to FS when it was not included
