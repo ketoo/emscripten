@@ -782,7 +782,6 @@ var memoryInitializer = null;
 
 #if USE_PTHREADS
 var PTHREAD_POOL_SIZE = Module['pthreadPoolSize'] || {{{ PTHREAD_POOL_SIZE }}};
-#endif
 
 #if PTHREAD_POOL_DELAY_LOAD != 1
 if (!ENVIRONMENT_IS_PTHREAD && PTHREAD_POOL_SIZE > 0) {
@@ -796,6 +795,7 @@ if (!ENVIRONMENT_IS_PTHREAD && PTHREAD_POOL_SIZE > 0) {
   });
 }
 #endif
+#endif // USE_PTHREADS
 
 #if ASSERTIONS && !('$FS' in addedLibraryItems) && !ASMFS
 // show errors on likely calls to FS when it was not included
