@@ -37,7 +37,7 @@ var LibraryPThread = {
     initMainThreadBlock: function() {
       if (ENVIRONMENT_IS_PTHREAD) return undefined;
 
-      if (PThread.POOL_SIZE) {
+      if (PThread.POOL_SIZE > 0) {
 #if PTHREADS_DEBUG
         out('Preallocating ' + PThread.POOL_SIZE + ' workers.');
 #endif

@@ -3,6 +3,19 @@
 
 Module['asm'] = asm;
 
+#if PTHREAD_POOL_DELAY_LOAD != 1
+if (!ENVIRONMENT_IS_PTHREAD && PThread.POOL_SIZE > 0) {
+  addOnPreRun(function() {
+    if (typeof SharedArrayBuffer !== 'undefined') {
+      addRunDependency('pthreads');
+      PThread.allocateUnusedWorkers(PThread.POOL_SIZE, function() {
+        removeRunDependency('pthreads');
+      });
+    }
+  });
+}
+#endif
+
 {{{ exportRuntime() }}}
 
 #if MEM_INIT_IN_WASM == 0

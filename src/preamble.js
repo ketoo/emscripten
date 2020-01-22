@@ -780,17 +780,6 @@ var memoryInitializer = null;
 #include "memoryprofiler.js"
 #endif
 
-#if PTHREAD_POOL_DELAY_LOAD != 1
-if (!ENVIRONMENT_IS_PTHREAD) addOnPreRun(function() {
-  if (typeof SharedArrayBuffer !== 'undefined') {
-    addRunDependency('pthreads');
-    PThread.allocateUnusedWorkers(PThread.POOL_SIZE, function() {
-      removeRunDependency('pthreads');
-    });
-  }
-});
-#endif
-
 #if ASSERTIONS && !('$FS' in addedLibraryItems) && !ASMFS
 // show errors on likely calls to FS when it was not included
 var FS = {
