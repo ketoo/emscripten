@@ -781,14 +781,14 @@ var memoryInitializer = null;
 #endif
 
 #if USE_PTHREADS
-var PTHREAD_POOL_SIZE = Module['pthreadPoolSize'] || {{{ PTHREAD_POOL_SIZE }}};
+var pthreadPoolSize = Module['pthreadPoolSize'] || {{{ PTHREAD_POOL_SIZE }}};
 
 #if PTHREAD_POOL_DELAY_LOAD != 1
-if (!ENVIRONMENT_IS_PTHREAD && PTHREAD_POOL_SIZE > 0) {
+if (!ENVIRONMENT_IS_PTHREAD && pthreadPoolSize > 0) {
   addOnPreRun(function() {
     if (typeof SharedArrayBuffer !== 'undefined') {
       addRunDependency('pthreads');
-      PThread.allocateUnusedWorkers(PTHREAD_POOL_SIZE, function() {
+      PThread.allocateUnusedWorkers(pthreadPoolSize, function() {
         removeRunDependency('pthreads');
       });
     }
