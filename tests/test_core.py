@@ -8285,23 +8285,31 @@ NODEFS is no longer included by default; build with -lnodefs.js
   @no_emterpreter
   @no_asan('TODO: ASan with MINIMAL_RUNTIME')
   @no_lsan('TODO: LSan with MINIMAL_RUNTIME')
-  def test_minimal_runtime_hello_world(self):
-    self.banned_js_engines = [V8_ENGINE, SPIDERMONKEY_ENGINE] # TODO: Support for non-Node.js shells has not yet been added to MINIMAL_RUNTIME
-    for args in [[], ['-s', 'MINIMAL_RUNTIME_STREAMING_WASM_COMPILATION=1'], ['-s', 'MINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION=1'], ['-s', 'DECLARE_ASM_MODULE_EXPORTS=0']]:
-      print(str(args))
-      self.emcc_args = ['-s', 'MINIMAL_RUNTIME=1'] + args
-      self.set_setting('MINIMAL_RUNTIME', 1)
-      self.maybe_closure()
-      self.do_run(open(path_from_root('tests', 'small_hello_world.c')).read(), 'hello')
+  @parameterized({
+    'default': ([],),
+    'streaming': (['-s', 'MINIMAL_RUNTIME_STREAMING_WASM_COMPILATION=1'],),
+    'streaming_inst': (['-s', 'MINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION=1'],),
+    'no_export': (['-s', 'DECLARE_ASM_MODULE_EXPORTS=0'],)
+  })
+  def test_minimal_runtime_hello_world(self, args):
+    # TODO: Support for non-Node.js shells has not yet been added to MINIMAL_RUNTIME
+    self.banned_js_engines = [V8_ENGINE, SPIDERMONKEY_ENGINE]
+    self.emcc_args = ['-s', 'MINIMAL_RUNTIME=1'] + args
+    self.set_setting('MINIMAL_RUNTIME', 1)
+    self.maybe_closure()
+    self.do_run(open(path_from_root('tests', 'small_hello_world.c')).read(), 'hello')
 
   # Test that printf() works in MINIMAL_RUNTIME=1
   @no_emterpreter
   @no_wasm_backend('MINIMAL_RUNTIME not yet available in Wasm backend')
-  def test_minimal_runtime_hello_world_printf(self):
-    for fs in [['-s', 'NO_FILESYSTEM=1'], ['-s', 'FORCE_FILESYSTEM=1']]:
-      self.emcc_args = ['-s', 'MINIMAL_RUNTIME=1'] + fs
-      self.maybe_closure()
-      self.do_run(open(path_from_root('tests', 'hello_world.c')).read(), 'hello, world!')
+  @parameterized({
+    'fs': (['-s', 'FORCE_FILESYSTEM=1'],),
+    'nofs': (['-s', 'NO_FILESYSTEM=1'],),
+  })
+  def test_minimal_runtime_hello_printf(self, args):
+    self.emcc_args = ['-s', 'MINIMAL_RUNTIME=1'] + args
+    self.maybe_closure()
+    self.do_run(open(path_from_root('tests', 'hello_world.c')).read(), 'hello, world!')
 
   # Tests that -s MINIMAL_RUNTIME=1 works well with SAFE_HEAP
   @no_emterpreter
