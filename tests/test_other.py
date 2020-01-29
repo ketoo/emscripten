@@ -8725,6 +8725,15 @@ end
       self.assertContained('libfoo.a: archive has no index; run ranlib to add one', stderr)
     # The default behavior is to add archive indexes automatically.
     run_process([PYTHON, EMCC, 'libfoo.a', 'hello_world.o'])
+    run_process([PYTHON, EMCC, 'libfoo.a', 'hello_world.o'])
+
+  def test_archive_non_objects(self):
+    create_test_file('file.txt', 'test file')
+    create_test_file('zeros.bin', '\0\0\0\0')
+    run_process([PYTHON, EMCC, '-c', path_from_root('tests', 'hello_world.c')])
+    # No index added.
+    run_process([PYTHON, EMAR, 'crS', 'libfoo.a', 'file.txt', 'zeros.bin', 'hello_world.o'])
+    run_process([PYTHON, EMCC, path_from_root('tests', 'hello_world.c'), 'libfoo.a'])
 
   def test_flag_aliases(self):
     def assert_aliases_match(flag1, flag2, flagarg, extra_args):
