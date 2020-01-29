@@ -2516,7 +2516,9 @@ class Building(object):
 
       outfile = filename + '.cc.js'
 
-      args = CLOSURE_COMPILER[:]
+      # TODO: Remove the --platform argument once the upstream issues are addressed:
+      # https://github.com/emscripten-core/emscripten/issues/10304
+      args = CLOSURE_COMPILER[:] + ['--platform=java']
       args += ['--compilation_level', 'ADVANCED_OPTIMIZATIONS' if advanced else 'SIMPLE_OPTIMIZATIONS',
                '--language_in', 'ECMASCRIPT5']
       for e in CLOSURE_EXTERNS:
